@@ -4,5 +4,5 @@
   "filename": "tb-energy-flow-card.js",
   "zip_release": true,
   "domains": ["lovelace"],
-  "homeassistant": "2023.1.0"
+  "homeassistant": "2025.07.1"
 }
