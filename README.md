@@ -88,6 +88,19 @@ temp_font:
   weight: normal
 
 ```
+## Các kiểu hiển thị khác
+
+### Có 2 PV
+![preview](preview2.png)
+
+Cách làm là thay đổi link hình ảnh và thực thể của micro inverter thành hình ảnh của String PV với thực thể PV2
+
+### Không có micro inverter
+![preview](preview3.png)
+
+Cách làm chỉnh lại `show_micro: true` thành `show_micro: false`
+
+
 ## Tùy chỉnh
 Các bạn có thể tùy chỉnh các thông số
 | Tùy chọn                | Mô tả                                                      |
