@@ -1,0 +1,8 @@
+{
+  "name": "tb-energy-flow-card",
+  "render_readme": true,
+  "filename": "tb-energy-flow-card.js",
+  "zip_release": true,
+  "domains": ["lovelace"],
+  "homeassistant": "2023.1.0"
+}
