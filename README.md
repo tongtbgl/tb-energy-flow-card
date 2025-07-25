@@ -88,3 +88,21 @@ temp_font:
   weight: normal
 
 ```
+## Tùy chỉnh
+Các bạn có thể tùy chỉnh các thông số
+| Tùy chọn                | Mô tả                                                      |
+| ----------------------- | ---------------------------------------------------------- |
+| `entities`              | Định nghĩa các thực thể: solar, grid, battery, micro, load |
+| `name`                  | Tên hiển thị cho từng thành phần                           |
+| `invert_grid`           | Đảo chiều animation của dòng điện lưới                     |
+| `invert_battery`        | Đảo chiều animation của pin                                |
+| `line_color`            | Màu của đường dẫn điện (mặc định: cam)                     |
+| `highlight_color`       | Màu vệt sáng di chuyển trên line                           |
+| `image_y_offset_top`    | Dịch chuyển trục Y nhóm hình ảnh phía trên                 |
+| `image_y_offset_bottom` | Dịch chuyển trục Y nhóm hình ảnh phía dưới                 |
+| `image_size_top`        | Kích thước hình ảnh nhóm trên                              |
+| `image_size_bottom`     | Kích thước hình ảnh nhóm dưới                              |
+| `font_size_label`       | Cỡ chữ của nhãn                                            |
+| `font_size_value`       | Cỡ chữ của giá trị                                         |
+| `font_weight_value`     | Độ đậm chữ số liệu                                         |
+| `decimal_precision`     | Số chữ số thập phân hiển thị                               |
