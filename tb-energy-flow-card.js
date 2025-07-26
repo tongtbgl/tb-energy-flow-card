@@ -44,9 +44,9 @@ class EnergyFlowCard extends HTMLElement {
     const drawTemp = (key) => {
       if (!temps[key]) return '';
       const pos = tempPos[key] || { x: 0, y: 0 };
-      const prefix = key.toUpperCase() + ''; 
-      const labelFontSize = tempFont.label_size || 14; 
-      const valueFontSize = tempFont.size || 16; 
+      const prefix = key.toUpperCase() + ':';
+      const labelFontSize = tempFont.label_size || 14;
+      const valueFontSize = tempFont.size || 16;
 
       return `
         <g id="temp-${key}" transform="translate(${pos.x},${pos.y})">
@@ -104,21 +104,21 @@ class EnergyFlowCard extends HTMLElement {
           <path id="grid" d="M 520,100 L 520,230 A 20,20 0 0,1 500,250 L 300,250 L 300,300"/>
           <path id="battery" d="M 80,500 L 80,370 A 20,20 0 0,1 100,350 L 300,350 L 300,300"/>
           <path id="load" d="M 520,500 L 520,370 A 20,20 0 0,0 500,350 L 300,350 L 300,300"/>
-          ${this.showSolar2 ? `<path id="solar2" d="M 300,100 L 300,300"/>` : ''}
+          ${this.showSolar2 ? `<path id="solar2" d="M 300,100 L 300,300"/>` : ''} 
           ${showMicro ? `<path id="micro" d="M 300,500 L 300,300"/>` : ''}
         </defs>
         <use href="#solar" class="path-line"/>
         <use href="#grid" class="path-line"/>
         <use href="#battery" class="path-line"/>
         <use href="#load" class="path-line"/>
-        ${this.showSolar2 ? `<use href="#solar2" class="path-line"/>` : ''}
+        ${this.showSolar2 ? `<use href="#solar2" class="path-line"/>` : ''} 
         ${showMicro ? `<use href="#micro" class="path-line"/>` : ''}
 
         <use id="anim-solar" href="#solar" class="highlight"/>
         <use id="anim-grid" href="#grid" class="highlight"/>
         <use id="anim-battery" href="#battery" class="highlight"/>
         <use id="anim-load" href="#load" class="highlight"/>
-        ${this.showSolar2 ? `<use id="anim-solar2" href="#solar2" class="highlight"/>` : ''}
+        ${this.showSolar2 ? `<use id="anim-solar2" href="#solar2" class="highlight"/>` : ''} 
         ${showMicro ? `<use id="anim-micro" href="#micro" class="highlight"/>` : ''}
 
         ${this._node(80, 100, 'solar', c.name_solar || 'Quang điện', c.image_solar, 'top')}
@@ -172,7 +172,7 @@ class EnergyFlowCard extends HTMLElement {
       battery: getUnit(c.battery),
       micro: showMicro ? getUnit(c.entity_micro) : '',
       solar2: this.showSolar2 ? getUnit(c.entity_solar2) : '',
-      load: getVal(c.load),
+      load: getUnit(c.load), // Đảm bảo lấy đơn vị cho load
     };
 
     const getSpeed = (val) => {
@@ -193,6 +193,7 @@ class EnergyFlowCard extends HTMLElement {
     const setText = (key, value, unit) => {
       const el = this.querySelector(`#val-${key}`);
       if (el) {
+        // Đây là chỗ bạn cần hiển thị đúng giá trị của load
         const formatted = this.decimalPrecision ? value.toFixed(2) : Math.round(value);
         el.textContent = `${formatted} ${unit}`;
       }
@@ -204,13 +205,13 @@ class EnergyFlowCard extends HTMLElement {
       if (!id) return;
       const el = this.querySelector(`#val-temp-${key}`);
       const val = parseFloat(hass.states[id]?.state || 0);
-      if (el) el.textContent = `${val.toFixed(1)}°C`; // Chỉ cập nhật giá trị, nhãn đã có sẵn
+      if (el) el.textContent = `${val.toFixed(1)}°C`;
     };
 
     setText('solar', v.solar, u.solar);
     setText('grid', v.grid, u.grid);
     setText('battery', v.battery, u.battery);
-    setText('load', v.load, u.load);
+    setText('load', v.load, u.load); // Gọi setText cho load
 
     if (this.showSolar2) {
       setText('solar2', v.solar2, u.solar2);
