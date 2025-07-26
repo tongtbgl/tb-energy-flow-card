@@ -119,3 +119,5 @@ Các bạn có thể tùy chỉnh các thông số
 | `font_size_value`       | Cỡ chữ của giá trị                                         |
 | `font_weight_value`     | Độ đậm chữ số liệu                                         |
 | `decimal_precision`     | Số chữ số thập phân hiển thị                               |
+| `show_micro`            | Cho hiển thị micro inverter                                |
+| `show_solar2`           | Cho hiển thị thêm string PV                                |
