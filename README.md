@@ -29,7 +29,9 @@ resources:
 ```yaml
 type: custom:tb-energy-flow-card
 show_micro: true
-solar: sensor.tong_pv_hybrid
+show_solar2: true
+solar: sensor.esp_inverter_pv1_power
+solar2: sensor.esp_inverter_pv2_power
 glow_size: 8
 grid: sensor.esp_inverter_grid_ct_power
 battery: sensor.esp_inverter_battery_power
@@ -39,12 +41,15 @@ soc: sensor.soc_giao_tiep
 grid_status: binary_sensor.esp_inverter_grid_connected_status
 grid_status_x: 520
 grid_status_y: 180
-name_solar: Quang điện
+name_solar: String 1
+name_solar2: String 2
 name_grid: Lưới EVN
 name_battery: Pin
 name_micro: Deye OnGrid
 name_load: Tải nhà
 image_solar: >-
+  https://png.pngtree.com/png-vector/20240720/ourmid/pngtree-sustainable-solar-water-pump-on-transparent-background-png-image_12963933.png
+image_solar2: >-
   https://png.pngtree.com/png-vector/20240720/ourmid/pngtree-sustainable-solar-water-pump-on-transparent-background-png-image_12963933.png
 image_grid: >-
   https://png.pngtree.com/png-vector/20250105/ourmid/pngtree-d-model-of-a-steel-transmission-tower-with-power-lines-on-png-image_15054625.png
@@ -86,6 +91,7 @@ temp_position:
 temp_font:
   size: 15
   weight: normal
+
 
 ```
 ## Các kiểu hiển thị khác
