@@ -162,7 +162,7 @@ class EnergyFlowCard extends HTMLElement {
       grid: getVal(c.grid),
       battery: getVal(c.battery),
       micro: showMicro ? getVal(c.entity_micro) : 0,
-      solar2: this.showSolar2 ? getVal(c.entity_solar2) : 0,
+      solar2: this.showSolar2 ? getVal(c.solar2) : 0,
       load: getVal(c.load),
     };
 
@@ -171,7 +171,7 @@ class EnergyFlowCard extends HTMLElement {
       grid: getUnit(c.grid),
       battery: getUnit(c.battery),
       micro: showMicro ? getUnit(c.entity_micro) : '',
-      solar2: this.showSolar2 ? getUnit(c.entity_solar2) : '',
+      solar2: this.showSolar2 ? getUnit(c.solar2) : '',
       load: getUnit(c.load), // Đảm bảo lấy đơn vị cho load
     };
 
