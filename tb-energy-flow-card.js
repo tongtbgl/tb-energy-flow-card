@@ -224,8 +224,7 @@ class EnergyFlowCard extends HTMLElement {
     setText('battery', v.battery, u.battery);
     setText('load', v.load, u.load);
 
-    // Cập nhật SOC động
-    if (c.soc) { // Chỉ cập nhật nếu entity SOC được cấu hình
+    if (c.soc) { 
       setSocText(v.soc, u.soc);
     }
 
@@ -268,9 +267,8 @@ class EnergyFlowCard extends HTMLElement {
       ? `<text class="label" y="${labelYOffset}" x="${-halfGap}">${label}</text>`
       : `<text class="label" y="${labelYOffset}" x="0">${label}</text>`;
 
-    // SOC text sẽ được cập nhật động bằng setText, không cần lấy giá trị ở đây
     const socText = id === 'battery' && this._config.soc
-      ? `<text id="val-soc" class="label" y="${labelYOffset}" x="${halfGap}">0%</text>` // Thêm ID để setText có thể tìm và cập nhật
+      ? `<text id="val-soc" class="label" y="${labelYOffset}" x="${halfGap}">0%</text>` 
       : '';
 
     return `
