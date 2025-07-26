@@ -31,6 +31,7 @@ class EnergyFlowCard extends HTMLElement {
     this.animationDurationConfig = c.animation_duration || '3s';
 
     const showMicro = c.show_micro !== false;
+    this.showSolar2 = c.show_solar2 === true;
 
     const temps = c.temp || {};
     const tempPos = c.temp_position || {};
@@ -94,24 +95,25 @@ class EnergyFlowCard extends HTMLElement {
           <path id="grid" d="M 520,100 L 520,230 A 20,20 0 0,1 500,250 L 300,250 L 300,300"/>
           <path id="battery" d="M 80,500 L 80,370 A 20,20 0 0,1 100,350 L 300,350 L 300,300"/>
           <path id="load" d="M 520,500 L 520,370 A 20,20 0 0,0 500,350 L 300,350 L 300,300"/>
-          ${showMicro ? `<path id="micro" d="M 300,100 L 300,300"/>` : ''}
+          ${this.showSolar2 ? `<path id="solar2" d="M 300,100 L 300,300"/>` : ''} ${showMicro ? `<path id="micro" d="M 300,500 L 300,300"/>` : ''}
         </defs>
         <use href="#solar" class="path-line"/>
         <use href="#grid" class="path-line"/>
         <use href="#battery" class="path-line"/>
         <use href="#load" class="path-line"/>
-        ${showMicro ? `<use href="#micro" class="path-line"/>` : ''}
+        ${this.showSolar2 ? `<use href="#solar2" class="path-line"/>` : ''} ${showMicro ? `<use href="#micro" class="path-line"/>` : ''}
+
         <use id="anim-solar" href="#solar" class="highlight"/>
         <use id="anim-grid" href="#grid" class="highlight"/>
         <use id="anim-battery" href="#battery" class="highlight"/>
         <use id="anim-load" href="#load" class="highlight"/>
-        ${showMicro ? `<use id="anim-micro" href="#micro" class="highlight"/>` : ''}
+        ${this.showSolar2 ? `<use id="anim-solar2" href="#solar2" class="highlight"/>` : ''} ${showMicro ? `<use id="anim-micro" href="#micro" class="highlight"/>` : ''}
 
         ${this._node(80, 100, 'solar', c.name_solar || 'Quang điện', c.image_solar, 'top')}
         ${this._node(520, 100, 'grid', c.name_grid || 'Lưới EVN', c.image_grid, 'top')}
-        ${showMicro ? this._node(300, 100, 'micro', c.name_micro || 'MicroInverter', c.image_micro, 'top') : ''}
         ${this._node(80, 500, 'battery', c.name_battery || 'Pin', c.image_battery, 'bottom')}
         ${this._node(520, 500, 'load', c.name_load || 'Tải', c.image_load, 'bottom')}
+        ${this.showSolar2 ? this._node(300, 100, 'solar2', c.name_solar2 || 'Solar 2', c.image_solar2, 'top') : ''} ${showMicro ? this._node(300, 500, 'micro', c.name_micro || 'MicroInverter', c.image_micro, 'bottom') : ''}
 
         ${c.inverter_image ? `<image href="${c.inverter_image}" x="${300 - this.inverterImageWidth/2}" y="${300 - this.inverterImageHeight/2}" width="${this.inverterImageWidth}" height="${this.inverterImageHeight}"/>` : ''}
 
@@ -147,6 +149,7 @@ class EnergyFlowCard extends HTMLElement {
       grid: getVal(c.grid),
       battery: getVal(c.battery),
       micro: showMicro ? getVal(c.entity_micro) : 0,
+      solar2: this.showSolar2 ? getVal(c.solar2) : 0,
       load: getVal(c.load),
     };
 
@@ -155,6 +158,7 @@ class EnergyFlowCard extends HTMLElement {
       grid: getUnit(c.grid),
       battery: getUnit(c.battery),
       micro: showMicro ? getUnit(c.entity_micro) : '',
+      solar2: this.showSolar2 ? getUnit(c.solar2) : '',
       load: getUnit(c.load),
     };
 
@@ -194,6 +198,11 @@ class EnergyFlowCard extends HTMLElement {
     setText('grid', v.grid, u.grid);
     setText('battery', v.battery, u.battery);
     setText('load', v.load, u.load);
+
+    if (this.showSolar2) { 
+      setText('solar2', v.solar2, u.solar2); 
+      setAnim('solar2', v.solar2 !== 0, false, getSpeed(v.solar2)); 
+    }
     if (showMicro) {
       setText('micro', v.micro, u.micro);
       setAnim('micro', v.micro !== 0, false, getSpeed(v.micro));
