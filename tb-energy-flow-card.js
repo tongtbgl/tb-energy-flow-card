@@ -162,8 +162,9 @@ class EnergyFlowCard extends HTMLElement {
       grid: getVal(c.grid),
       battery: getVal(c.battery),
       micro: showMicro ? getVal(c.entity_micro) : 0,
-      solar2: this.showSolar2 ? getVal(c.solar2) : 0,
+      solar2: this.showSolar2 ? getVal(c.entity_solar2) : 0,
       load: getVal(c.load),
+      soc: getVal(c.soc), // Lấy giá trị SOC từ cấu hình
     };
 
     const u = {
@@ -171,8 +172,9 @@ class EnergyFlowCard extends HTMLElement {
       grid: getUnit(c.grid),
       battery: getUnit(c.battery),
       micro: showMicro ? getUnit(c.entity_micro) : '',
-      solar2: this.showSolar2 ? getUnit(c.solar2) : '',
+      solar2: this.showSolar2 ? getUnit(c.entity_solar2) : '',
       load: getUnit(c.load),
+      soc: getUnit(c.soc), // Lấy đơn vị cho SOC (nếu có, thường là %)
     };
 
     const getSpeed = (val) => {
@@ -198,6 +200,16 @@ class EnergyFlowCard extends HTMLElement {
       }
     };
 
+    // Hàm setText cho SOC, để định dạng riêng là %
+    const setSocText = (value, unit) => {
+      const el = this.querySelector(`#val-soc`);
+      if (el) {
+        // Định dạng SOC luôn là số nguyên và thêm %
+        const formatted = Math.round(value);
+        el.textContent = `${formatted}%`;
+      }
+    };
+
     const setTemp = (key) => {
       const temps = c.temp || {};
       const id = temps[key];
@@ -210,7 +222,12 @@ class EnergyFlowCard extends HTMLElement {
     setText('solar', v.solar, u.solar);
     setText('grid', v.grid, u.grid);
     setText('battery', v.battery, u.battery);
-    setText('load', v.load, u.load); // Gọi setText cho load
+    setText('load', v.load, u.load);
+
+    // Cập nhật SOC động
+    if (c.soc) { // Chỉ cập nhật nếu entity SOC được cấu hình
+      setSocText(v.soc, u.soc);
+    }
 
     if (this.showSolar2) {
       setText('solar2', v.solar2, u.solar2);
@@ -251,8 +268,9 @@ class EnergyFlowCard extends HTMLElement {
       ? `<text class="label" y="${labelYOffset}" x="${-halfGap}">${label}</text>`
       : `<text class="label" y="${labelYOffset}" x="0">${label}</text>`;
 
+    // SOC text sẽ được cập nhật động bằng setText, không cần lấy giá trị ở đây
     const socText = id === 'battery' && this._config.soc
-      ? `<text class="label" y="${labelYOffset}" x="${halfGap}">${parseFloat(this._hass?.states[this._config.soc]?.state || 0).toFixed(0)}%</text>`
+      ? `<text id="val-soc" class="label" y="${labelYOffset}" x="${halfGap}">0%</text>` // Thêm ID để setText có thể tìm và cập nhật
       : '';
 
     return `
