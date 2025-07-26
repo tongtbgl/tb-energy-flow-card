@@ -38,13 +38,13 @@ class EnergyFlowCard extends HTMLElement {
     const tempFont = c.temp_font || {};
 
     // Define offsets for label and value of temperature
-    const tempLabelYOffset = tempFont.label_y_offset || -10; // Default offset for temp label
-    const tempValueYOffset = tempFont.value_y_offset || 10; // Default offset for temp value
+    const tempLabelYOffset = tempFont.label_y_offset || -10;
+    const tempValueYOffset = tempFont.value_y_offset || 10;
 
     const drawTemp = (key) => {
       if (!temps[key]) return '';
       const pos = tempPos[key] || { x: 0, y: 0 };
-      const prefix = key.toUpperCase() + ':';
+      const prefix = key.toUpperCase() + '';
       const labelFontSize = tempFont.label_size || 14;
       const valueFontSize = tempFont.size || 16;
 
@@ -172,7 +172,7 @@ class EnergyFlowCard extends HTMLElement {
       battery: getUnit(c.battery),
       micro: showMicro ? getUnit(c.entity_micro) : '',
       solar2: this.showSolar2 ? getUnit(c.solar2) : '',
-      load: getUnit(c.load), // Đảm bảo lấy đơn vị cho load
+      load: getUnit(c.load),
     };
 
     const getSpeed = (val) => {
@@ -193,7 +193,6 @@ class EnergyFlowCard extends HTMLElement {
     const setText = (key, value, unit) => {
       const el = this.querySelector(`#val-${key}`);
       if (el) {
-        // Đây là chỗ bạn cần hiển thị đúng giá trị của load
         const formatted = this.decimalPrecision ? value.toFixed(2) : Math.round(value);
         el.textContent = `${formatted} ${unit}`;
       }
