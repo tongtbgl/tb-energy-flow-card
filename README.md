@@ -127,3 +127,7 @@ Các bạn có thể tùy chỉnh các thông số
 | `decimal_precision`     | Số chữ số thập phân hiển thị                               |
 | `show_micro`            | Cho hiển thị micro inverter                                |
 | `show_solar2`           | Cho hiển thị thêm string PV                                |
+
+# Ủng hộ tôi để có thêm động lực phát triển:
+https://bachtran.net/donate/
+Cảm ơn các bạn
