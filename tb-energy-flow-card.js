@@ -37,7 +37,6 @@ class EnergyFlowCard extends HTMLElement {
     const tempPos = c.temp_position || {};
     const tempFont = c.temp_font || {};
 
-    // Define offsets for label and value of temperature
     const tempLabelYOffset = tempFont.label_y_offset || -10;
     const tempValueYOffset = tempFont.value_y_offset || 10;
 
@@ -59,9 +58,16 @@ class EnergyFlowCard extends HTMLElement {
       <style>
         :host {
           display: block;
-          background-color: var(--card-background-color, white);
+          /* Đã loại bỏ background-color, border-radius, padding từ :host */
+          /* Các thuộc tính này sẽ được áp dụng cho .card-container */
+        }
+        .card-container { /* Thêm một container mới */
+          background-color: white; /* Màu trắng tường minh cho nền card */
           border-radius: var(--ha-card-border-radius, 12px);
           padding: 16px;
+          box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước tổng */
+          width: 100%; /* Chiếm toàn bộ chiều rộng của host */
+          height: 100%; /* Chiếm toàn bộ chiều cao của host */
         }
         .value {
           font-weight: ${this.fontWeightValue};
@@ -98,48 +104,48 @@ class EnergyFlowCard extends HTMLElement {
           100% { stroke-dashoffset: 0; }
         }
       </style>
-      <svg viewBox="0 0 600 600" width="100%" height="100%">
-        <defs>
-          <path id="solar" d="M 80,100 L 80,230 A 20,20 0 0,0 100,250 L 300,250 L 300,300"/>
-          <path id="grid" d="M 520,100 L 520,230 A 20,20 0 0,1 500,250 L 300,250 L 300,300"/>
-          <path id="battery" d="M 80,500 L 80,370 A 20,20 0 0,1 100,350 L 300,350 L 300,300"/>
-          <path id="load" d="M 520,500 L 520,370 A 20,20 0 0,0 500,350 L 300,350 L 300,300"/>
-          ${this.showSolar2 ? `<path id="solar2" d="M 300,100 L 300,300"/>` : ''} 
-          ${showMicro ? `<path id="micro" d="M 300,500 L 300,300"/>` : ''}
-        </defs>
-        <use href="#solar" class="path-line"/>
-        <use href="#grid" class="path-line"/>
-        <use href="#battery" class="path-line"/>
-        <use href="#load" class="path-line"/>
-        ${this.showSolar2 ? `<use href="#solar2" class="path-line"/>` : ''} 
-        ${showMicro ? `<use href="#micro" class="path-line"/>` : ''}
+      <div class="card-container"> <svg viewBox="0 0 600 600" width="100%" height="100%">
+          <defs>
+            <path id="solar" d="M 80,100 L 80,230 A 20,20 0 0,0 100,250 L 300,250 L 300,300"/>
+            <path id="grid" d="M 520,100 L 520,230 A 20,20 0 0,1 500,250 L 300,250 L 300,300"/>
+            <path id="battery" d="M 80,500 L 80,370 A 20,20 0 0,1 100,350 L 300,350 L 300,300"/>
+            <path id="load" d="M 520,500 L 520,370 A 20,20 0 0,0 500,350 L 300,350 L 300,300"/>
+            ${this.showSolar2 ? `<path id="solar2" d="M 300,100 L 300,300"/>` : ''} 
+            ${showMicro ? `<path id="micro" d="M 300,500 L 300,300"/>` : ''}
+          </defs>
+          <use href="#solar" class="path-line"/>
+          <use href="#grid" class="path-line"/>
+          <use href="#battery" class="path-line"/>
+          <use href="#load" class="path-line"/>
+          ${this.showSolar2 ? `<use href="#solar2" class="path-line"/>` : ''} 
+          ${showMicro ? `<use href="#micro" class="path-line"/>` : ''}
 
-        <use id="anim-solar" href="#solar" class="highlight"/>
-        <use id="anim-grid" href="#grid" class="highlight"/>
-        <use id="anim-battery" href="#battery" class="highlight"/>
-        <use id="anim-load" href="#load" class="highlight"/>
-        ${this.showSolar2 ? `<use id="anim-solar2" href="#solar2" class="highlight"/>` : ''} 
-        ${showMicro ? `<use id="anim-micro" href="#micro" class="highlight"/>` : ''}
+          <use id="anim-solar" href="#solar" class="highlight"/>
+          <use id="anim-grid" href="#grid" class="highlight"/>
+          <use id="anim-battery" href="#battery" class="highlight"/>
+          <use id="anim-load" href="#load" class="highlight"/>
+          ${this.showSolar2 ? `<use id="anim-solar2" href="#solar2" class="highlight"/>` : ''} 
+          ${showMicro ? `<use id="anim-micro" href="#micro" class="highlight"/>` : ''}
 
-        ${this._node(80, 100, 'solar', c.name_solar || 'Quang điện', c.image_solar, 'top')}
-        ${this._node(520, 100, 'grid', c.name_grid || 'Lưới EVN', c.image_grid, 'top')}
-        ${this._node(80, 500, 'battery', c.name_battery || 'Pin', c.image_battery, 'bottom')}
-        ${this._node(520, 500, 'load', c.name_load || 'Tải', c.image_load, 'bottom')}
-        ${this.showSolar2 ? this._node(300, 100, 'solar2', c.name_solar2 || 'Solar 2', c.image_solar2, 'top') : ''}
-        ${showMicro ? this._node(300, 500, 'micro', c.name_micro || 'MicroInverter', c.image_micro, 'bottom') : ''}
+          ${this._node(80, 100, 'solar', c.name_solar || 'Quang điện', c.image_solar, 'top')}
+          ${this._node(520, 100, 'grid', c.name_grid || 'Lưới EVN', c.image_grid, 'top')}
+          ${this._node(80, 500, 'battery', c.name_battery || 'Pin', c.image_battery, 'bottom')}
+          ${this._node(520, 500, 'load', c.name_load || 'Tải', c.image_load, 'bottom')}
+          ${this.showSolar2 ? this._node(300, 100, 'solar2', c.name_solar2 || 'Solar 2', c.image_solar2, 'top') : ''}
+          ${showMicro ? this._node(300, 500, 'micro', c.name_micro || 'MicroInverter', c.image_micro, 'bottom') : ''}
 
-        ${c.inverter_image ? `<image href="${c.inverter_image}" x="${300 - this.inverterImageWidth/2}" y="${300 - this.inverterImageHeight/2}" width="${this.inverterImageWidth}" height="${this.inverterImageHeight}"/>` : ''}
+          ${c.inverter_image ? `<image href="${c.inverter_image}" x="${300 - this.inverterImageWidth/2}" y="${300 - this.inverterImageHeight/2}" width="${this.inverterImageWidth}" height="${this.inverterImageHeight}"/>` : ''}
 
-        ${c.grid_status ? `
-        <g id="grid-status-icon" transform="translate(${c.grid_status_x || 410},${c.grid_status_y || 200})">
-          <circle r="10" fill="gray"/>
-          <text id="grid-status-symbol" text-anchor="middle" y="5" font-size="14px" font-weight="bold" fill="white">?</text>
-        </g>` : ''}
+          ${c.grid_status ? `
+          <g id="grid-status-icon" transform="translate(${c.grid_status_x || 410},${c.grid_status_y || 200})">
+            <circle r="10" fill="gray"/>
+            <text id="grid-status-symbol" text-anchor="middle" y="5" font-size="14px" font-weight="bold" fill="white">?</text>
+          </g>` : ''}
 
-        ${drawTemp('ac')}
-        ${drawTemp('dc')}
-      </svg>
-    `;
+          ${drawTemp('ac')}
+          ${drawTemp('dc')}
+        </svg>
+      </div> `;
   }
 
   set hass(hass) {
@@ -162,9 +168,9 @@ class EnergyFlowCard extends HTMLElement {
       grid: getVal(c.grid),
       battery: getVal(c.battery),
       micro: showMicro ? getVal(c.entity_micro) : 0,
-      solar2: this.showSolar2 ? getVal(c.solar2) : 0,
+      solar2: this.showSolar2 ? getVal(c.entity_solar2) : 0,
       load: getVal(c.load),
-      soc: getVal(c.soc), // Lấy giá trị SOC từ cấu hình
+      soc: getVal(c.soc),
     };
 
     const u = {
@@ -172,9 +178,9 @@ class EnergyFlowCard extends HTMLElement {
       grid: getUnit(c.grid),
       battery: getUnit(c.battery),
       micro: showMicro ? getUnit(c.entity_micro) : '',
-      solar2: this.showSolar2 ? getUnit(c.solar2) : '',
+      solar2: this.showSolar2 ? getUnit(c.entity_solar2) : '',
       load: getUnit(c.load),
-      soc: getUnit(c.soc), // Lấy đơn vị cho SOC (nếu có, thường là %)
+      soc: getUnit(c.soc),
     };
 
     const getSpeed = (val) => {
@@ -200,11 +206,9 @@ class EnergyFlowCard extends HTMLElement {
       }
     };
 
-    // Hàm setText cho SOC, để định dạng riêng là %
     const setSocText = (value, unit) => {
       const el = this.querySelector(`#val-soc`);
       if (el) {
-        // Định dạng SOC luôn là số nguyên và thêm %
         const formatted = Math.round(value);
         el.textContent = `${formatted}%`;
       }
