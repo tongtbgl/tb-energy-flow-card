@@ -3,7 +3,7 @@ class EnergyFlowCard extends HTMLElement {
     const c = this._config;
     this.lineWidth = c.line_width || 3;
     this.lineColor = c.line_color || 'gray';
-    this.highlightColor = c.highlight_color || 'orange';
+    this.dotColor = c.dot_color || 'orange';
     this.glowSize = c.glow_size || 8;
     this.invertGrid = c.invert_grid === true;
     this.invertBattery = c.invert_battery === true;
@@ -23,11 +23,11 @@ class EnergyFlowCard extends HTMLElement {
 
     this.fontSizeLabel = c.font_size_label || 12;
     this.fontSizeValue = c.font_size_value || 12;
-    this.fontWeightValue = c.font_weight_value || 'bold';
+    this.fontWeightValue = c.fontWeightValue || 'bold';
 
     this.decimalPrecision = c.decimal_precision !== false;
 
-    this.highlightLength = c.highlight_length || 50;
+    this.dotSize = c.dot_size || 8;
     this.animationDurationConfig = c.animation_duration || '3s';
 
     const showMicro = c.show_micro !== false;
@@ -84,47 +84,35 @@ class EnergyFlowCard extends HTMLElement {
           fill: none;
           stroke-linecap: round;
         }
-        .highlight {
-          stroke: ${this.highlightColor};
-          stroke-width: ${this.lineWidth};
-          fill: none;
-          stroke-linecap: round;
-          stroke-dasharray: ${this.highlightLength} 570;
-          stroke-dashoffset: 600;
-          animation: dashmove var(--duration, 3s) linear infinite;
-          filter: drop-shadow(0 0 ${this.glowSize}px ${this.highlightColor});
-        }
-        .highlight-reverse {
-          animation-direction: reverse;
-        }
-        @keyframes dashmove {
-          0% { stroke-dashoffset: 600; }
-          100% { stroke-dashoffset: 0; }
+        .flow-dot {
+          fill: ${this.dotColor};
+          filter: drop-shadow(0 0 ${this.glowSize}px ${this.dotColor});
         }
       </style>
       <div class="card-container">
         <svg viewBox="0 0 600 600" width="100%" height="100%">
           <defs>
-            <path id="solar" d="M 80,100 L 80,230 A 20,20 0 0,0 100,250 L 300,250 L 300,300"/>
-            <path id="grid" d="M 520,100 L 520,230 A 20,20 0 0,1 500,250 L 300,250 L 300,300"/>
-            <path id="battery" d="M 80,500 L 80,370 A 20,20 0 0,1 100,350 L 300,350 L 300,300"/>
-            <path id="load" d="M 520,500 L 520,370 A 20,20 0 0,0 500,350 L 300,350 L 300,300"/>
-            ${this.showSolar2 ? `<path id="solar2" d="M 300,100 L 300,300"/>` : ''} 
-            ${showMicro ? `<path id="micro" d="M 300,500 L 300,300"/>` : ''}
+            <path id="solar-path" d="M 80,100 L 80,230 A 20,20 0 0,0 100,250 L 300,250 L 300,300"/>
+            <path id="grid-path" d="M 520,100 L 520,230 A 20,20 0 0,1 500,250 L 300,250 L 300,300"/>
+            <path id="battery-path" d="M 80,500 L 80,370 A 20,20 0 0,1 100,350 L 300,350 L 300,300"/>
+            <path id="load-path" d="M 520,500 L 520,370 A 20,20 0 0,0 500,350 L 300,350 L 300,300"/>
+            ${this.showSolar2 ? `<path id="solar2-path" d="M 300,100 L 300,300"/>` : ''}
+            ${showMicro ? `<path id="micro-path" d="M 300,500 L 300,300"/>` : ''}
           </defs>
-          <use href="#solar" class="path-line"/>
-          <use href="#grid" class="path-line"/>
-          <use href="#battery" class="path-line"/>
-          <use href="#load" class="path-line"/>
-          ${this.showSolar2 ? `<use href="#solar2" class="path-line"/>` : ''} 
-          ${showMicro ? `<use href="#micro" class="path-line"/>` : ''}
 
-          <use id="anim-solar" href="#solar" class="highlight"/>
-          <use id="anim-grid" href="#grid" class="highlight"/>
-          <use id="anim-battery" href="#battery" class="highlight"/>
-          <use id="anim-load" href="#load" class="highlight"/>
-          ${this.showSolar2 ? `<use id="anim-solar2" href="#solar2" class="highlight"/>` : ''} 
-          ${showMicro ? `<use id="anim-micro" href="#micro" class="highlight"/>` : ''}
+          <use href="#solar-path" class="path-line"/>
+          <use href="#grid-path" class="path-line"/>
+          <use href="#battery-path" class="path-line"/>
+          <use href="#load-path" class="path-line"/>
+          ${this.showSolar2 ? `<use href="#solar2-path" class="path-line"/>` : ''}
+          ${showMicro ? `<use href="#micro-path" class="path-line"/>` : ''}
+
+          <circle id="dot-solar" class="flow-dot" r="${this.dotSize / 2}" style="display: none;"/>
+          <circle id="dot-grid" class="flow-dot" r="${this.dotSize / 2}" style="display: none;"/>
+          <circle id="dot-battery" class="flow-dot" r="${this.dotSize / 2}" style="display: none;"/>
+          <circle id="dot-load" class="flow-dot" r="${this.dotSize / 2}" style="display: none;"/>
+          ${this.showSolar2 ? `<circle id="dot-solar2" class="flow-dot" r="${this.dotSize / 2}" style="display: none;"/>` : ''}
+          ${showMicro ? `<circle id="dot-micro" class="flow-dot" r="${this.dotSize / 2}" style="display: none;"/>` : ''}
 
           ${this._node(80, 100, 'solar', c.name_solar || 'Quang điện', c.image_solar, 'top')}
           ${this._node(520, 100, 'grid', c.name_grid || 'Lưới EVN', c.image_grid, 'top')}
@@ -146,6 +134,11 @@ class EnergyFlowCard extends HTMLElement {
         </svg>
       </div>
     `;
+
+    // Khởi tạo trạng thái cho các chấm chuyển động
+    this._dots = {};
+    this._animationFrame = null;
+    this._lastAnimateTime = null;
   }
 
   set hass(hass) {
@@ -184,18 +177,35 @@ class EnergyFlowCard extends HTMLElement {
     };
 
     const getSpeed = (val) => {
-      if (this.animationDurationConfig !== 'auto') return this.animationDurationConfig;
-      if (val > 3000) return '2s';
-      if (val > 1000) return '3s';
-      return '4s';
+      if (this.animationDurationConfig !== 'auto') return parseFloat(this.animationDurationConfig.replace('s', '')); // convert '3s' to 3
+      if (val > 3000) return 2;
+      if (val > 1000) return 3;
+      return 4;
     };
 
-    const setAnim = (key, active, reverse, speed) => {
-      const el = this.querySelector(`#anim-${key}`);
-      if (!el) return;
-      el.style.display = active ? 'inline' : 'none';
-      el.setAttribute('class', `highlight ${reverse ? 'highlight-reverse' : ''}`);
-      el.style.setProperty('--duration', speed);
+    const setupDotAnimation = (key, value, reverse) => {
+      const dotEl = this.querySelector(`#dot-${key}`);
+      const pathEl = this.querySelector(`#${key}-path`); // Lấy đường dẫn từ defs
+      if (!dotEl || !pathEl) return;
+
+      if (!this._dots[key]) {
+        this._dots[key] = {
+          element: dotEl,
+          path: pathEl,
+          pathLength: pathEl.getTotalLength(),
+          currentPos: 0, // Vị trí hiện tại trên đường dẫn (từ 0 đến pathLength)
+          active: false,
+          speed: 0, // Tốc độ di chuyển (pixels per second)
+          reverse: false,
+        };
+      }
+
+      const dotState = this._dots[key];
+      dotState.active = value !== 0;
+      dotState.reverse = reverse;
+      dotState.speed = dotState.pathLength / getSpeed(Math.abs(value)); // Tính tốc độ thực tế
+
+      dotEl.style.display = dotState.active ? 'inline' : 'none';
     };
 
     const setText = (key, value, unit) => {
@@ -228,23 +238,23 @@ class EnergyFlowCard extends HTMLElement {
     setText('battery', v.battery, u.battery);
     setText('load', v.load, u.load);
 
-    if (c.soc) { 
+    if (c.soc) {
       setSocText(v.soc, u.soc);
     }
 
+    // Cập nhật trạng thái animation cho từng đường dẫn
+    setupDotAnimation('solar', v.solar, false);
+    setupDotAnimation('grid', v.grid, (v.grid < 0) !== !this.invertGrid);
+    setupDotAnimation('battery', v.battery, (v.battery < 0) !== !this.invertBattery);
+    setupDotAnimation('load', v.load, true); // Load luôn chạy ngược hướng path
     if (this.showSolar2) {
       setText('solar2', v.solar2, u.solar2);
-      setAnim('solar2', v.solar2 !== 0, false, getSpeed(v.solar2));
+      setupDotAnimation('solar2', v.solar2, false);
     }
     if (showMicro) {
       setText('micro', v.micro, u.micro);
-      setAnim('micro', v.micro !== 0, false, getSpeed(v.micro));
+      setupDotAnimation('micro', v.micro, false);
     }
-
-    setAnim('solar', v.solar !== 0, false, getSpeed(v.solar));
-    setAnim('grid', v.grid !== 0, (v.grid < 0) !== !this.invertGrid, getSpeed(Math.abs(v.grid)));
-    setAnim('battery', v.battery !== 0, (v.battery < 0) !== !this.invertBattery, getSpeed(Math.abs(v.battery)));
-    setAnim('load', v.load !== 0, true, getSpeed(v.load));
 
     setTemp('ac');
     setTemp('dc');
@@ -258,6 +268,54 @@ class EnergyFlowCard extends HTMLElement {
       if (iconEl) iconEl.textContent = icon;
       if (circleEl) circleEl.setAttribute('fill', color);
     }
+
+    // Bắt đầu hoặc tiếp tục animation frame nếu chưa chạy
+    if (!this._animationFrame) {
+      this._animationFrame = requestAnimationFrame(this._animateDots.bind(this));
+    }
+  }
+
+  // Hàm animation chính
+  _animateDots(timestamp) {
+    if (!this._lastAnimateTime) {
+      this._lastAnimateTime = timestamp;
+    }
+    const deltaTime = (timestamp - this._lastAnimateTime) / 1000; // Thời gian trôi qua (giây)
+    this._lastAnimateTime = timestamp;
+
+    for (const key in this._dots) {
+      const dot = this._dots[key];
+      if (dot.active) {
+        let newPos = dot.currentPos;
+        if (dot.reverse) {
+          newPos -= dot.speed * deltaTime;
+          if (newPos < 0) {
+            newPos += dot.pathLength; // Quay lại cuối đường dẫn
+          }
+        } else {
+          newPos += dot.speed * deltaTime;
+          if (newPos > dot.pathLength) {
+            newPos -= dot.pathLength; // Quay lại đầu đường dẫn
+          }
+        }
+        dot.currentPos = newPos;
+
+        const point = dot.path.getPointAtLength(dot.currentPos);
+        dot.element.setAttribute('cx', point.x);
+        dot.element.setAttribute('cy', point.y);
+      }
+    }
+
+    this._animationFrame = requestAnimationFrame(this._animateDots.bind(this));
+  }
+
+  // Đảm bảo dừng animation khi card bị xóa khỏi DOM để tránh memory leaks
+  disconnectedCallback() {
+    if (this._animationFrame) {
+      cancelAnimationFrame(this._animationFrame);
+      this._animationFrame = null;
+    }
+    this._dots = {}; // Reset dots state
   }
 
   _node(x, y, id, label, imgSrc, group) {
@@ -272,7 +330,7 @@ class EnergyFlowCard extends HTMLElement {
       : `<text class="label" y="${labelYOffset}" x="0">${label}</text>`;
 
     const socText = id === 'battery' && this._config.soc
-      ? `<text id="val-soc" class="label" y="${labelYOffset}" x="${halfGap}">0%</text>` 
+      ? `<text id="val-soc" class="label" y="${labelYOffset}" x="${halfGap}">0%</text>`
       : '';
 
     return `
