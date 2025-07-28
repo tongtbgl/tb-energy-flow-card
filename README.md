@@ -32,7 +32,6 @@ show_micro: true
 show_solar2: true
 solar: sensor.esp_inverter_pv1_power
 solar2: sensor.esp_inverter_pv2_power
-glow_size: 8
 grid: sensor.esp_inverter_grid_ct_power
 battery: sensor.esp_inverter_battery_power
 entity_micro: sensor.esp_inverter_aux_power
@@ -46,7 +45,7 @@ name_solar2: String 2
 name_grid: Lưới EVN
 name_battery: Pin
 name_micro: Deye OnGrid
-name_load: Tải nhà
+name_load: Sử dụng
 image_solar: >-
   https://png.pngtree.com/png-vector/20240720/ourmid/pngtree-sustainable-solar-water-pump-on-transparent-background-png-image_12963933.png
 image_solar2: >-
@@ -57,13 +56,13 @@ image_battery: https://bachtran.net/ha/img/battery.png
 image_micro: https://tpenergy.com.vn/wp-content/uploads/2023/10/3-1-1.png
 image_load: https://bachtran.net/ha/img/home.png
 inverter_image: https://bachtran.net/wp-content/uploads/2025/07/deye1.png
-line_color: "#dfdfdf"
+line_color: "#ededed"
 line_width: 3
-highlight_color: red
+dot_color: "#34eb49"
 invert_grid: true
 invert_battery: true
 decimal_precision: false
-highlight_length: 60
+dot_size: 8
 animation_duration: auto
 image_y_offset_top: -50
 image_y_offset_bottom: -95
@@ -83,15 +82,14 @@ temp:
   dc: sensor.esp_inverter_dc_transformer_temperature
 temp_position:
   ac:
-    x: 390
-    "y": 340
+    x: 380
+    "y": 330
   dc:
-    x: 215
-    "y": 340
+    x: 220
+    "y": 330
 temp_font:
-  size: 15
+  size: 12
   weight: normal
-
 
 ```
 ## Các kiểu hiển thị khác
@@ -116,7 +114,8 @@ Các bạn có thể tùy chỉnh các thông số
 | `invert_grid`           | Đảo chiều animation của dòng điện lưới                     |
 | `invert_battery`        | Đảo chiều animation của pin                                |
 | `line_color`            | Màu của đường dẫn điện (mặc định: cam)                     |
-| `highlight_color`       | Màu vệt sáng di chuyển trên line                           |
+| `dot_color`             | Màu của chấm tròn                                          |
+| `dot_size`              | Kích thước của chấm tròn                                   |
 | `image_y_offset_top`    | Dịch chuyển trục Y nhóm hình ảnh phía trên                 |
 | `image_y_offset_bottom` | Dịch chuyển trục Y nhóm hình ảnh phía dưới                 |
 | `image_size_top`        | Kích thước hình ảnh nhóm trên                              |
