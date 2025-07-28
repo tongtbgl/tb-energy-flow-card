@@ -59,7 +59,7 @@ class EnergyFlowCard extends HTMLElement {
         :host {
           display: block;
         }
-        .card-container { 
+        .card-container {
           background-color: white;
           border-radius: var(--ha-card-border-radius, 12px);
           padding: 16px;
@@ -102,7 +102,8 @@ class EnergyFlowCard extends HTMLElement {
           100% { stroke-dashoffset: 0; }
         }
       </style>
-      <div class="card-container"> <svg viewBox="0 0 600 600" width="100%" height="100%">
+      <div class="card-container">
+        <svg viewBox="0 0 600 600" width="100%" height="100%">
           <defs>
             <path id="solar" d="M 80,100 L 80,230 A 20,20 0 0,0 100,250 L 300,250 L 300,300"/>
             <path id="grid" d="M 520,100 L 520,230 A 20,20 0 0,1 500,250 L 300,250 L 300,300"/>
@@ -143,7 +144,8 @@ class EnergyFlowCard extends HTMLElement {
           ${drawTemp('ac')}
           ${drawTemp('dc')}
         </svg>
-      </div> `;
+      </div>
+    `;
   }
 
   set hass(hass) {
