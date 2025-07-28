@@ -58,16 +58,14 @@ class EnergyFlowCard extends HTMLElement {
       <style>
         :host {
           display: block;
-          /* Đã loại bỏ background-color, border-radius, padding từ :host */
-          /* Các thuộc tính này sẽ được áp dụng cho .card-container */
         }
-        .card-container { /* Thêm một container mới */
-          background-color: white; /* Màu trắng tường minh cho nền card */
+        .card-container { 
+          background-color: white;
           border-radius: var(--ha-card-border-radius, 12px);
           padding: 16px;
-          box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước tổng */
-          width: 100%; /* Chiếm toàn bộ chiều rộng của host */
-          height: 100%; /* Chiếm toàn bộ chiều cao của host */
+          box-sizing: border-box;
+          width: 100%;
+          height: 100%;
         }
         .value {
           font-weight: ${this.fontWeightValue};
@@ -168,7 +166,7 @@ class EnergyFlowCard extends HTMLElement {
       grid: getVal(c.grid),
       battery: getVal(c.battery),
       micro: showMicro ? getVal(c.entity_micro) : 0,
-      solar2: this.showSolar2 ? getVal(c.entity_solar2) : 0,
+      solar2: this.showSolar2 ? getVal(c.solar2) : 0,
       load: getVal(c.load),
       soc: getVal(c.soc),
     };
@@ -178,7 +176,7 @@ class EnergyFlowCard extends HTMLElement {
       grid: getUnit(c.grid),
       battery: getUnit(c.battery),
       micro: showMicro ? getUnit(c.entity_micro) : '',
-      solar2: this.showSolar2 ? getUnit(c.entity_solar2) : '',
+      solar2: this.showSolar2 ? getUnit(c.solar2) : '',
       load: getUnit(c.load),
       soc: getUnit(c.soc),
     };
