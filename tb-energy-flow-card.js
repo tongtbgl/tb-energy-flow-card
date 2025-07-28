@@ -60,7 +60,7 @@ class EnergyFlowCard extends HTMLElement {
           display: block;
         }
         .card-container {
-          background-color: white;
+          background-color: transparent;
           border-radius: var(--ha-card-border-radius, 12px);
           padding: 16px;
           box-sizing: border-box;
