@@ -192,9 +192,9 @@ class EnergyFlowCard extends HTMLElement {
           element: dotEl,
           path: pathEl,
           pathLength: pathEl.getTotalLength(),
-          currentPos: 0, 
+          currentPos: 0,
           active: false,
-          speed: 0, 
+          speed: 0,
           reverse: false,
         };
       }
@@ -202,7 +202,7 @@ class EnergyFlowCard extends HTMLElement {
       const dotState = this._dots[key];
       dotState.active = value !== 0;
       dotState.reverse = reverse;
-      dotState.speed = dotState.pathLength / getSpeed(Math.abs(value)); 
+      dotState.speed = dotState.pathLength / getSpeed(Math.abs(value));
 
       dotEl.style.display = dotState.active ? 'inline' : 'none';
     };
