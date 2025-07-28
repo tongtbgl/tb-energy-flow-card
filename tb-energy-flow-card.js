@@ -135,7 +135,6 @@ class EnergyFlowCard extends HTMLElement {
       </div>
     `;
 
-    // Khởi tạo trạng thái cho các chấm chuyển động
     this._dots = {};
     this._animationFrame = null;
     this._lastAnimateTime = null;
@@ -185,7 +184,7 @@ class EnergyFlowCard extends HTMLElement {
 
     const setupDotAnimation = (key, value, reverse) => {
       const dotEl = this.querySelector(`#dot-${key}`);
-      const pathEl = this.querySelector(`#${key}-path`); // Lấy đường dẫn từ defs
+      const pathEl = this.querySelector(`#${key}-path`);
       if (!dotEl || !pathEl) return;
 
       if (!this._dots[key]) {
@@ -193,9 +192,9 @@ class EnergyFlowCard extends HTMLElement {
           element: dotEl,
           path: pathEl,
           pathLength: pathEl.getTotalLength(),
-          currentPos: 0, // Vị trí hiện tại trên đường dẫn (từ 0 đến pathLength)
+          currentPos: 0, 
           active: false,
-          speed: 0, // Tốc độ di chuyển (pixels per second)
+          speed: 0, 
           reverse: false,
         };
       }
@@ -203,7 +202,7 @@ class EnergyFlowCard extends HTMLElement {
       const dotState = this._dots[key];
       dotState.active = value !== 0;
       dotState.reverse = reverse;
-      dotState.speed = dotState.pathLength / getSpeed(Math.abs(value)); // Tính tốc độ thực tế
+      dotState.speed = dotState.pathLength / getSpeed(Math.abs(value)); 
 
       dotEl.style.display = dotState.active ? 'inline' : 'none';
     };
@@ -242,11 +241,10 @@ class EnergyFlowCard extends HTMLElement {
       setSocText(v.soc, u.soc);
     }
 
-    // Cập nhật trạng thái animation cho từng đường dẫn
     setupDotAnimation('solar', v.solar, false);
     setupDotAnimation('grid', v.grid, (v.grid < 0) !== !this.invertGrid);
     setupDotAnimation('battery', v.battery, (v.battery < 0) !== !this.invertBattery);
-    setupDotAnimation('load', v.load, true); // Load luôn chạy ngược hướng path
+    setupDotAnimation('load', v.load, true);
     if (this.showSolar2) {
       setText('solar2', v.solar2, u.solar2);
       setupDotAnimation('solar2', v.solar2, false);
@@ -269,18 +267,16 @@ class EnergyFlowCard extends HTMLElement {
       if (circleEl) circleEl.setAttribute('fill', color);
     }
 
-    // Bắt đầu hoặc tiếp tục animation frame nếu chưa chạy
     if (!this._animationFrame) {
       this._animationFrame = requestAnimationFrame(this._animateDots.bind(this));
     }
   }
 
-  // Hàm animation chính
   _animateDots(timestamp) {
     if (!this._lastAnimateTime) {
       this._lastAnimateTime = timestamp;
     }
-    const deltaTime = (timestamp - this._lastAnimateTime) / 1000; // Thời gian trôi qua (giây)
+    const deltaTime = (timestamp - this._lastAnimateTime) / 1000;
     this._lastAnimateTime = timestamp;
 
     for (const key in this._dots) {
@@ -290,12 +286,12 @@ class EnergyFlowCard extends HTMLElement {
         if (dot.reverse) {
           newPos -= dot.speed * deltaTime;
           if (newPos < 0) {
-            newPos += dot.pathLength; // Quay lại cuối đường dẫn
+            newPos += dot.pathLength;
           }
         } else {
           newPos += dot.speed * deltaTime;
           if (newPos > dot.pathLength) {
-            newPos -= dot.pathLength; // Quay lại đầu đường dẫn
+            newPos -= dot.pathLength;
           }
         }
         dot.currentPos = newPos;
@@ -309,13 +305,12 @@ class EnergyFlowCard extends HTMLElement {
     this._animationFrame = requestAnimationFrame(this._animateDots.bind(this));
   }
 
-  // Đảm bảo dừng animation khi card bị xóa khỏi DOM để tránh memory leaks
   disconnectedCallback() {
     if (this._animationFrame) {
       cancelAnimationFrame(this._animationFrame);
       this._animationFrame = null;
     }
-    this._dots = {}; // Reset dots state
+    this._dots = {};
   }
 
   _node(x, y, id, label, imgSrc, group) {
