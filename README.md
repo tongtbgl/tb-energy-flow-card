@@ -28,10 +28,10 @@ resources:
 ## Code mẫu
 ```yaml
 type: custom:tb-energy-flow-card
-show_micro: true
+show_micro: false
 show_solar2: true
-solar: sensor.esp_inverter_pv1_power
-solar2: sensor.esp_inverter_pv2_power
+solar: sensor.tong_pv_hybrid
+solar2: sensor.esp_inverter_aux_power
 grid: sensor.esp_inverter_grid_ct_power
 battery: sensor.esp_inverter_battery_power
 entity_micro: sensor.esp_inverter_aux_power
@@ -40,56 +40,105 @@ soc: sensor.soc_giao_tiep
 grid_status: binary_sensor.esp_inverter_grid_connected_status
 grid_status_x: 520
 grid_status_y: 180
-name_solar: String 1
-name_solar2: String 2
+name_solar: Hybrid
+name_solar2: On Grid
 name_grid: Lưới EVN
 name_battery: Pin
 name_micro: Deye OnGrid
 name_load: Sử dụng
 image_solar: >-
-  https://png.pngtree.com/png-vector/20240720/ourmid/pngtree-sustainable-solar-water-pump-on-transparent-background-png-image_12963933.png
-image_solar2: >-
-  https://png.pngtree.com/png-vector/20240720/ourmid/pngtree-sustainable-solar-water-pump-on-transparent-background-png-image_12963933.png
+  https://cdn3d.iconscout.com/3d/premium/thumb/solar-panel-system-6814926-5602608.png
+image_solar2: https://tpenergy.com.vn/wp-content/uploads/2023/10/3-1-1.png
 image_grid: >-
-  https://png.pngtree.com/png-vector/20250105/ourmid/pngtree-d-model-of-a-steel-transmission-tower-with-power-lines-on-png-image_15054625.png
-image_battery: https://bachtran.net/ha/img/battery.png
+  https://cdn3d.iconscout.com/3d/premium/thumb/transmission-tower-6477336-5559823.png
+image_battery: https://cdn3d.iconscout.com/3d/premium/thumb/car-battery-15130326-12271944.png
 image_micro: https://tpenergy.com.vn/wp-content/uploads/2023/10/3-1-1.png
 image_load: https://bachtran.net/ha/img/home.png
-inverter_image: https://bachtran.net/wp-content/uploads/2025/07/deye1.png
-line_color: "#ededed"
+inverter_image: https://hungvietgt.com/upload/image/sanpham/huawei/sun20005-6k-lb0.png
+line_color: "#000"
 line_width: 3
-dot_color: "#34eb49"
+dot_color: "#34a4eb"
+dot_size: 15
 invert_grid: true
 invert_battery: true
 decimal_precision: false
-dot_size: 8
 animation_duration: auto
 image_y_offset_top: -50
-image_y_offset_bottom: -95
-image_size_top: 100
-image_size_bottom: 150
-inverter_image_width: 800
+image_y_offset_bottom: -50
+image_size_top: 80
+image_size_bottom: 80
+inverter_image_width: 200
 inverter_image_height: 200
 label_y_offset_top: -50
 value_y_offset_top: -75
-label_y_offset_bottom: 90
-value_y_offset_bottom: 65
-font_size_label: 18
+label_y_offset_bottom: 95
+value_y_offset_bottom: 70
+font_size_label: 15
 font_size_value: 25
-font_weight_value: 1000
 temp:
   ac: sensor.esp_inverter_radiator_temperature
   dc: sensor.esp_inverter_dc_transformer_temperature
 temp_position:
   ac:
-    x: 380
+    x: 430
     "y": 330
   dc:
-    x: 220
+    x: 170
     "y": 330
 temp_font:
-  size: 12
+  size: 15
   weight: normal
+today:
+  product: sensor.tong_san_luong_ngay
+  import: sensor.esp_inverter_day_grid_import
+  export: sensor.esp_inverter_day_grid_export
+  charge: sensor.esp_inverter_day_battery_charge
+  discharge: sensor.esp_inverter_day_battery_discharge
+  load: sensor.tong_tieu_thu
+today_labels:
+  product: SL
+  import: Mua
+  export: Bán
+  charge: Sạc
+  discharge: Xả
+  load: Tải
+today_font:
+  label_size: 13
+  size: 13
+  weight: normal
+  label_y_offset: -12
+  value_y_offset: 10
+  align: mid
+today_position:
+  product:
+    x: 130
+    "y": 170
+  import:
+    x: 460
+    "y": 160
+  export:
+    x: 460
+    "y": 185
+  charge:
+    x: 130
+    "y": 420
+  discharge:
+    x: 128
+    "y": 445
+  load:
+    x: 470
+    "y": 430
+card_mod:
+  style: |
+    ha-card {
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    .card-container {
+      background: transparent !important;
+      box-shadow: none !important;
+      padding: 0px !important; 
+    }
 
 ```
 ## Các kiểu hiển thị khác
