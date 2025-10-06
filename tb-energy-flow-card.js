@@ -7,46 +7,37 @@ class EnergyFlowCard extends HTMLElement {
     this.glowSize = c.glow_size || 8;
     this.invertGrid = c.invert_grid === true;
     this.invertBattery = c.invert_battery === true;
-
     this.labelYOffsetTop = c.label_y_offset_top || -30;
     this.valueYOffsetTop = c.value_y_offset_top || -10;
     this.labelYOffsetBottom = c.label_y_offset_bottom || 22;
     this.valueYOffsetBottom = c.value_y_offset_bottom || 40;
-
     this.imageYOffsetTop = c.image_y_offset_top || -6;
     this.imageYOffsetBottom = c.image_y_offset_bottom || -40;
     this.imageSizeTop = c.image_size_top || 48;
     this.imageSizeBottom = c.image_size_bottom || 48;
-
     this.inverterImageWidth = c.inverter_image_width || 60;
     this.inverterImageHeight = c.inverter_image_height || 60;
-
     this.fontSizeLabel = c.font_size_label || 12;
     this.fontSizeValue = c.font_size_value || 12;
     this.fontWeightValue = c.fontWeightValue || 'bold';
-
     this.decimalPrecision = c.decimal_precision !== false;
-
     this.dotSize = c.dot_size || 8;
     this.animationDurationConfig = c.animation_duration || '3s';
-
     const showMicro = c.show_micro !== false;
     this.showSolar2 = c.show_solar2 === true;
 
     const temps = c.temp || {};
     const tempPos = c.temp_position || {};
     const tempFont = c.temp_font || {};
-
     const tempLabelYOffset = tempFont.label_y_offset || -10;
     const tempValueYOffset = tempFont.value_y_offset || 10;
 
     const drawTemp = (key) => {
       if (!temps[key]) return '';
       const pos = tempPos[key] || { x: 0, y: 0 };
-      const prefix = key.toUpperCase() + '';
+      const prefix = (tempFont.prefix?.[key]) ?? (key.toUpperCase() + '');
       const labelFontSize = tempFont.label_size || 14;
       const valueFontSize = tempFont.size || 16;
-
       return `
         <g id="temp-${key}" transform="translate(${pos.x},${pos.y})">
           <text text-anchor="middle" y="${tempLabelYOffset}" font-size="${labelFontSize}px" font-weight="${tempFont.weight || 'normal'}" fill="var(--primary-text-color)">${prefix}</text>
@@ -54,11 +45,40 @@ class EnergyFlowCard extends HTMLElement {
         </g>`;
     };
 
+    const today = c.today || {};
+    const todayPos = c.today_position || {};
+    const todayFont = c.today_font || {};
+    const todayLabels = c.today_labels || {};
+    const todayValueSize = todayFont.size || 16;
+    const todayWeight = todayFont.weight || 'bold';
+    const alignMap = { left: 'start', mid: 'middle', right: 'end' };
+    this.todayTextAnchor = alignMap[(todayFont.align || 'mid')] || 'middle';
+
+    const defaultTodayLabels = {
+      product: 'Sản lượng',
+      import: 'Mua',
+      export: 'Bán',
+      charge: 'Sạc',
+      discharge: 'Xả',
+      load: 'Tiêu thụ'
+    };
+
+    const drawToday = (key) => {
+      if (!today[key]) return '';
+      const pos = todayPos[key] || { x: 0, y: 0 };
+      const label = todayLabels[key] || defaultTodayLabels[key] || key;
+      return `
+        <g id="today-${key}" transform="translate(${pos.x},${pos.y})">
+          <text id="val-today-${key}" class="today-inline" text-anchor="${this.todayTextAnchor}"
+                font-size="${todayValueSize}px" font-weight="${todayWeight}"
+                fill="var(--primary-text-color)">${label}: 0</text>
+        </g>
+      `;
+    };
+
     this.innerHTML = `
       <style>
-        :host {
-          display: block;
-        }
+        :host { display: block; }
         .card-container {
           background-color: transparent;
           border-radius: var(--ha-card-border-radius, 12px);
@@ -131,10 +151,16 @@ class EnergyFlowCard extends HTMLElement {
 
           ${drawTemp('ac')}
           ${drawTemp('dc')}
+
+          ${drawToday('product')}
+          ${drawToday('import')}
+          ${drawToday('export')}
+          ${drawToday('charge')}
+          ${drawToday('discharge')}
+          ${drawToday('load')}
         </svg>
       </div>
     `;
-
     this._dots = {};
     this._animationFrame = null;
     this._lastAnimateTime = null;
@@ -149,7 +175,6 @@ class EnergyFlowCard extends HTMLElement {
       const s = hass.states[id];
       return s ? parseFloat(s.state) : 0;
     };
-
     const getUnit = (id) => {
       const s = hass.states[id];
       return s?.attributes?.unit_of_measurement || '';
@@ -164,7 +189,6 @@ class EnergyFlowCard extends HTMLElement {
       load: getVal(c.load),
       soc: getVal(c.soc),
     };
-
     const u = {
       solar: getUnit(c.solar),
       grid: getUnit(c.grid),
@@ -176,7 +200,7 @@ class EnergyFlowCard extends HTMLElement {
     };
 
     const getSpeed = (val) => {
-      if (this.animationDurationConfig !== 'auto') return parseFloat(this.animationDurationConfig.replace('s', '')); // convert '3s' to 3
+      if (this.animationDurationConfig !== 'auto') return parseFloat(this.animationDurationConfig.replace('s', ''));
       if (val > 3000) return 2;
       if (val > 1000) return 3;
       return 4;
@@ -186,7 +210,6 @@ class EnergyFlowCard extends HTMLElement {
       const dotEl = this.querySelector(`#dot-${key}`);
       const pathEl = this.querySelector(`#${key}-path`);
       if (!dotEl || !pathEl) return;
-
       if (!this._dots[key]) {
         this._dots[key] = {
           element: dotEl,
@@ -198,29 +221,27 @@ class EnergyFlowCard extends HTMLElement {
           reverse: false,
         };
       }
-
       const dotState = this._dots[key];
       dotState.active = value !== 0;
       dotState.reverse = reverse;
       dotState.speed = dotState.pathLength / getSpeed(Math.abs(value));
-
       dotEl.style.display = dotState.active ? 'inline' : 'none';
+    };
+
+    const formatNumber = (val, fixed = 2) => {
+      if (isNaN(val)) return '0';
+      if (this.decimalPrecision) return Number(val).toFixed(fixed);
+      return String(Math.round(val));
     };
 
     const setText = (key, value, unit) => {
       const el = this.querySelector(`#val-${key}`);
-      if (el) {
-        const formatted = this.decimalPrecision ? value.toFixed(2) : Math.round(value);
-        el.textContent = `${formatted} ${unit}`;
-      }
+      if (el) el.textContent = `${formatNumber(value, 2)} ${unit}`;
     };
 
-    const setSocText = (value, unit) => {
+    const setSocText = (value) => {
       const el = this.querySelector(`#val-soc`);
-      if (el) {
-        const formatted = Math.round(value);
-        el.textContent = `${formatted}%`;
-      }
+      if (el) el.textContent = `${Math.round(value)}%`;
     };
 
     const setTemp = (key) => {
@@ -232,19 +253,43 @@ class EnergyFlowCard extends HTMLElement {
       if (el) el.textContent = `${val.toFixed(1)}°C`;
     };
 
+    const today = c.today || {};
+    const todayLabels = c.today_labels || {};
+    const defaultTodayLabels = {
+      product: 'Sản lượng',
+      import: 'Mua',
+      export: 'Bán',
+      charge: 'Sạc',
+      discharge: 'Xả',
+      load: 'Tiêu thụ'
+    };
+    const formatNumberToday = (val) => {
+      const n = parseFloat(val);
+      if (isNaN(n)) return '0.0';
+      return n.toFixed(1);
+    };
+    const setTodayVal = (key) => {
+      const id = today[key];
+      if (!id) return;
+      const el = this.querySelector(`#val-today-${key}`);
+      if (!el) return;
+      const label = todayLabels[key] || defaultTodayLabels[key] || key;
+      const val = parseFloat(this._hass.states[id]?.state || 0);
+      const unit = getUnit(id);
+      el.textContent = `${label}: ${formatNumberToday(val)} ${unit}`;
+    };
+
     setText('solar', v.solar, u.solar);
     setText('grid', v.grid, u.grid);
     setText('battery', v.battery, u.battery);
     setText('load', v.load, u.load);
-
-    if (c.soc) {
-      setSocText(v.soc, u.soc);
-    }
+    if (c.soc) setSocText(v.soc);
 
     setupDotAnimation('solar', v.solar, false);
     setupDotAnimation('grid', v.grid, (v.grid < 0) !== !this.invertGrid);
     setupDotAnimation('battery', v.battery, (v.battery < 0) !== !this.invertBattery);
     setupDotAnimation('load', v.load, true);
+
     if (this.showSolar2) {
       setText('solar2', v.solar2, u.solar2);
       setupDotAnimation('solar2', v.solar2, false);
@@ -257,8 +302,15 @@ class EnergyFlowCard extends HTMLElement {
     setTemp('ac');
     setTemp('dc');
 
+    setTodayVal('product');
+    setTodayVal('import');
+    setTodayVal('export');
+    setTodayVal('charge');
+    setTodayVal('discharge');
+    setTodayVal('load');
+
     if (c.grid_status) {
-      const state = hass.states[c.grid_status]?.state;
+      const state = this._hass.states[c.grid_status]?.state;
       const icon = state === 'on' ? '✔' : '✖';
       const color = state === 'on' ? 'green' : 'red';
       const iconEl = this.querySelector('#grid-status-symbol');
@@ -273,35 +325,25 @@ class EnergyFlowCard extends HTMLElement {
   }
 
   _animateDots(timestamp) {
-    if (!this._lastAnimateTime) {
-      this._lastAnimateTime = timestamp;
-    }
+    if (!this._lastAnimateTime) this._lastAnimateTime = timestamp;
     const deltaTime = (timestamp - this._lastAnimateTime) / 1000;
     this._lastAnimateTime = timestamp;
-
     for (const key in this._dots) {
       const dot = this._dots[key];
-      if (dot.active) {
-        let newPos = dot.currentPos;
-        if (dot.reverse) {
-          newPos -= dot.speed * deltaTime;
-          if (newPos < 0) {
-            newPos += dot.pathLength;
-          }
-        } else {
-          newPos += dot.speed * deltaTime;
-          if (newPos > dot.pathLength) {
-            newPos -= dot.pathLength;
-          }
-        }
-        dot.currentPos = newPos;
-
-        const point = dot.path.getPointAtLength(dot.currentPos);
-        dot.element.setAttribute('cx', point.x);
-        dot.element.setAttribute('cy', point.y);
+      if (!dot.active) continue;
+      let newPos = dot.currentPos;
+      if (dot.reverse) {
+        newPos -= dot.speed * deltaTime;
+        if (newPos < 0) newPos += dot.pathLength;
+      } else {
+        newPos += dot.speed * deltaTime;
+        if (newPos > dot.pathLength) newPos -= dot.pathLength;
       }
+      dot.currentPos = newPos;
+      const point = dot.path.getPointAtLength(dot.currentPos);
+      dot.element.setAttribute('cx', point.x);
+      dot.element.setAttribute('cy', point.y);
     }
-
     this._animationFrame = requestAnimationFrame(this._animateDots.bind(this));
   }
 
