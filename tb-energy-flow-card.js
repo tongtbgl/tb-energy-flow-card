@@ -317,6 +317,12 @@ class EnergyFlowCard extends HTMLElement {
       const circleEl = this.querySelector('#grid-status-icon circle');
       if (iconEl) iconEl.textContent = icon;
       if (circleEl) circleEl.setAttribute('fill', color);
+
+      if (iconEl) {
+        iconEl.textContent = icon;
+        iconEl.setAttribute('fill', state === 'on' ? 'white' : 'white');
+      }
+      if (circleEl) circleEl.setAttribute('fill', color);
     }
 
     if (!this._animationFrame) {
